@@ -14,7 +14,6 @@ async function setup(url: string) {
       }
     : {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: 'google-chrome',
       };
   const browser = await puppeteer.launch(launchOptions);
   const page = (await browser.newPage()) as Page;
