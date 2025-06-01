@@ -62,6 +62,8 @@ export async function downloadMagazineFromPressReader(
     await alertCloseButton.click();
   }
   console.log(`Navigated to publication page: ${publicationPage}`);
+
+  await page.goto(publicationPage, { waitUntil: 'networkidle2' });
   // take screenshot of the page
   const file = path.join(downloadPath, `screenshot.png`);
   await page.screenshot({ path: file });
