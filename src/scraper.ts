@@ -61,13 +61,16 @@ export async function downloadMagazineFromPressReader(
     await alertCloseButton.click();
   }
   console.log(`Navigated to publication page: ${publicationPage}`);
+  // take screenshot of the page
+  const file = path.join(downloadPath, `screenshot.png`);
+  await page.screenshot({ path: file });
   // click link with data-testid "readNowButton"
   await page.waitForSelector('a[data-testid="readNowButton"]', { visible: true });
   const readNowButton = await page.$('a[data-testid="readNowButton"]');
   if (!readNowButton) {
     console.error('Read Now button not found');
     await browser.close();
-    return null;
+    return file;
   }
   console.log('Clicking Read Now button...');
   await readNowButton.click();
