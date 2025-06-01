@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "heroku-postbuild": "mkdir ./.cache && mv /app/.cache/puppeteer ./.cache",
     "dev": "NODE_ENV=development ts-node src/index.ts",
     "start": "npm run build && NODE_ENV=production node dist/index.js",
     "lint": "eslint . --ext .ts --fix",
