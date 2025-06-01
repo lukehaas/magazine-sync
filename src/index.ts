@@ -23,7 +23,7 @@ async function getFile({ name, source, type }: Magazine): Promise<string | null>
 }
 
 const magazines: Magazine[] = [
-  { name: 'the-economist-uk', source: 'PressReader', type: 'magazine' },
+  { name: 'the-economist-eu', source: 'PressReader', type: 'magazine' },
   { name: 'new-scientist', source: 'PressReader', type: 'magazine' },
   { name: 'the-wall-street-journal', source: 'PressReader', type: 'newspaper' },
   { name: 'forbes', source: 'PressReader', type: 'magazine' },
