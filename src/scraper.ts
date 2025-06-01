@@ -5,17 +5,11 @@ import path from 'path';
 import { getLatestIssueId, setLatestIssueId } from './store';
 
 async function setup(url: string) {
-  const isDev = process.env.NODE_ENV === 'development';
-  const launchOptions = isDev
-    ? {
-        headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        defaultViewport: { width: 1600, height: 1500 },
-      }
-    : {
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      };
-  const browser = await puppeteer.launch(launchOptions);
+  const browser = await puppeteer.launch({
+    // headless: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    defaultViewport: { width: 1600, height: 1500 },
+  });
   const page = (await browser.newPage()) as Page;
   const downloadPath = path.resolve(__dirname, '../downloads');
   await fs.promises.mkdir(downloadPath, { recursive: true });
@@ -41,6 +35,7 @@ export async function downloadMagazineFromPressReader(
   // Wait for the page to load and display the login form
   await page.waitForSelector('input[type="email"]', { visible: true });
   // Fill in the email and password fields
+  console.log('Logging in to PressReader...');
   await page.type('input[type="email"]', process.env.PRESSREADER_USERNAME || '', { delay: 50 });
   await page.type('input[type="password"]', process.env.PRESSREADER_PASSWORD || '', { delay: 50 });
   // submit the form
@@ -53,9 +48,11 @@ export async function downloadMagazineFromPressReader(
   if (alertCloseButton) {
     await alertCloseButton.click();
   }
+  // https://www.pressreader.com/catalog/mypublications
 
   const urlPath = type === 'magazine' ? 'magazines/m' : 'newspapers/n';
   const publicationPage = `https://pressreader.com/${urlPath}/${name}`;
+  // https://pressreader.com/magazines/m/the-economist-uk
 
   await page.goto(publicationPage, { waitUntil: 'networkidle2' });
 
@@ -63,7 +60,7 @@ export async function downloadMagazineFromPressReader(
   if (alertCloseButton) {
     await alertCloseButton.click();
   }
-
+  console.log(`Navigated to publication page: ${publicationPage}`);
   // click link with data-testid "readNowButton"
   await page.waitForSelector('a[data-testid="readNowButton"]', { visible: true });
   const readNowButton = await page.$('a[data-testid="readNowButton"]');
@@ -72,6 +69,7 @@ export async function downloadMagazineFromPressReader(
     await browser.close();
     return null;
   }
+  console.log('Clicking Read Now button...');
   await readNowButton.click();
   await page.waitForNavigation({ waitUntil: 'networkidle2' });
 
@@ -80,8 +78,6 @@ export async function downloadMagazineFromPressReader(
   // get text content from '.navmenu-header-meta'
   const issueText = await page.$eval('.navmenu-header-meta', (el) => el.textContent?.trim());
   const issueDate = issueText?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || '';
-
-  console.log(issueDate);
 
   const latestIssueId = await getLatestIssueId(name);
   if (latestIssueId && latestIssueId === issueDate) {
@@ -98,6 +94,7 @@ export async function downloadMagazineFromPressReader(
     await browser.close();
     return null;
   }
+  console.log('Clicking Options button...');
   await optionsButton.click();
   await page.waitForSelector('.pri-exportereader', { visible: true });
   // click .pri-exportereader
@@ -107,6 +104,7 @@ export async function downloadMagazineFromPressReader(
     await browser.close();
     return null;
   }
+  console.log('Clicking Export Reader button...');
   await exportReaderButton.click();
   await page.waitForSelector('.scroller-wrapper.pop-list', { visible: true });
 
