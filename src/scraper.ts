@@ -5,6 +5,8 @@ import path from 'path';
 
 import { getLatestIssueId, setLatestIssueId } from './store';
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function setup(url: string) {
   const browser = await puppeteer.launch({
     // headless: false,
@@ -45,10 +47,13 @@ export async function downloadMagazineFromPressReader(
     page.waitForNavigation({ waitUntil: 'networkidle2' }),
   ]);
 
+  await delay(2000);
+
   let alertCloseButton = await page.$('.alert-close');
   if (alertCloseButton) {
     await alertCloseButton.click();
   }
+  await delay(2000);
   // https://www.pressreader.com/catalog/mypublications
 
   const urlPath = type === 'magazine' ? 'magazines/m' : 'newspapers/n';
@@ -57,17 +62,20 @@ export async function downloadMagazineFromPressReader(
 
   await page.goto(publicationPage, { waitUntil: 'networkidle2' });
 
+  await delay(2000);
+
   alertCloseButton = await page.$('.alert-close');
   if (alertCloseButton) {
     await alertCloseButton.click();
   }
   console.log(`Navigated to publication page: ${publicationPage}`);
+  await delay(2000);
 
-  await page.goto(publicationPage, { waitUntil: 'networkidle2' });
-  alertCloseButton = await page.$('.alert-close');
-  if (alertCloseButton) {
-    await alertCloseButton.click();
-  }
+  // await page.goto(publicationPage, { waitUntil: 'networkidle2' });
+  // alertCloseButton = await page.$('.alert-close');
+  // if (alertCloseButton) {
+  //   await alertCloseButton.click();
+  // }
   // take screenshot of the page
   const file = path.join(downloadPath, `screenshot.png`);
   await page.screenshot({ path: file });
