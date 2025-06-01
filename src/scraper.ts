@@ -12,7 +12,9 @@ async function setup(url: string) {
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         defaultViewport: { width: 1600, height: 1500 },
       }
-    : {};
+    : {
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      };
   const browser = await puppeteer.launch(launchOptions);
   const page = (await browser.newPage()) as Page;
   const downloadPath = path.resolve(__dirname, '../downloads');
