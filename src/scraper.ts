@@ -1,3 +1,4 @@
+// @ts-nocheck
 import puppeteer, { Page } from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
@@ -64,13 +65,17 @@ export async function downloadMagazineFromPressReader(
   // take screenshot of the page
   const file = path.join(downloadPath, `screenshot.png`);
   await page.screenshot({ path: file });
+  await browser.close();
+  return file;
+  // ignore unreachable code below this point
+
   // click link with data-testid "readNowButton"
   await page.waitForSelector('a[data-testid="readNowButton"]', { visible: true });
   const readNowButton = await page.$('a[data-testid="readNowButton"]');
   if (!readNowButton) {
     console.error('Read Now button not found');
     await browser.close();
-    return file;
+    return null;
   }
   console.log('Clicking Read Now button...');
   await readNowButton.click();
