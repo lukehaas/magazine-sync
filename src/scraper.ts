@@ -5,11 +5,15 @@ import path from 'path';
 import { getLatestIssueId, setLatestIssueId } from './store';
 
 async function setup(url: string) {
-  const browser = await puppeteer.launch({
-    headless: false,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport: { width: 1600, height: 1500 },
-  });
+  const isDev = process.env.NODE_ENV === 'development';
+  const launchOptions = isDev
+    ? {
+        headless: false,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        defaultViewport: { width: 1600, height: 1500 },
+      }
+    : {};
+  const browser = await puppeteer.launch(launchOptions);
   const page = (await browser.newPage()) as Page;
   const downloadPath = path.resolve(__dirname, '../downloads');
   await fs.promises.mkdir(downloadPath, { recursive: true });
