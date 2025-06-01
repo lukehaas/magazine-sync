@@ -77,7 +77,7 @@ export async function downloadMagazineFromPressReader(
   //   await alertCloseButton.click();
   // }
   // take screenshot of the page
-  const file = path.join(downloadPath, `screenshot.png`);
+  const file = path.join(downloadPath, `${name}-screenshot.png`);
   await page.screenshot({ path: file });
   await browser.close();
   return file;
